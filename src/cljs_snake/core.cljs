@@ -49,9 +49,14 @@
 ;; Views
 
 (defn home-page []
-   [:div
-     [:h2 "Snake AI in clojurescript"]
-     [simple-component]])
+ [:div
+    [:h2 "Snake AI in clojurescript"]
+    [:div
+       [:div {:style {:width "250px" :float "left" }} "ciao"]
+       [:div {:id "canvas"
+              :style {:margin-left "260px"}} [:canvas {:style {:width "800px" :height "800px"}}]]] 
+
+   [simple-component]])
 
 
 ;; -------------------------
