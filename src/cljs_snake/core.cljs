@@ -1,7 +1,7 @@
 (ns cljs-snake.core
     (:require
       [reagent.core :as r]
-      [reagent.dom :as d]))
+      [reagent.dom :as rdom]))
 
 
 ;; -------------------------
@@ -38,6 +38,21 @@
    :bestSnakeScore 0
    :sameBest 0})
 
+
+
+
+
+(defn draw-canvas-contents [ canvas]
+  (let [ ctx (.getContext canvas "2d")
+        w (.-clientWidth canvas)
+        h (.-clientHeight canvas)]
+    (.beginPath ctx)
+    (.moveTo ctx 0 0)
+    (.lineTo ctx w h)
+    (.moveTo ctx w 0)
+    (.lineTo ctx 0 h)
+    (.stroke ctx)))
+
 (defn simple-component []
   [:div
    [:p "I am a component!"]
@@ -45,25 +60,38 @@
     "I have " [:strong "bold"]
     [:span {:style {:color "red"}} " and red "] "text."]])
 
+
+
 ;; -------------------------
 ;; Views
+
+(defn canvas-component [a b c]
+ (let [state (r/atom {})] ;; you can include state
+   (r/create-class  {
+                     :component-did-mount (fn [this] (draw-canvas-contents
+                       ;; per ora non so fare altro ... ci sarà un altro modo senza usare getElementById
+                                                      (rdom/dom-node  (. js/document (getElementById "canvas")))));(fn [] (println "I mounted"))
+                     :display-name "canvas-component"
+                      ;; note the keyword for this method
+                     :reagent-render  (fn [a b c]
+                                          [:div {:style {:margin-left "260px"}}
+                                            [:canvas {:id "canvas":style {:width "800px" :height "800px"}}]])})))
 
 (defn home-page []
  [:div
     [:h2 "Snake AI in clojurescript"]
     [:div
-       [:div {:style {:width "250px" :float "left" }} "ciao"]
-       [:div {:id "canvas"
-              :style {:margin-left "260px"}} [:canvas {:style {:width "800px" :height "800px"}}]]] 
-
-   [simple-component]])
+       [:div {:style {:width "250px" :float "left"}}
+        [:input {:type "button" :value "start" :on-click (fn[x] (js/console.log "start clicked ..."))}]]
+       [canvas-component "a" "b" "c"]]
+    [simple-component]])
 
 
 ;; -------------------------
 ;; Initialize app
 
 (defn mount-root []
-  (d/render [home-page] (.getElementById js/document "app")))
+  (rdom/render [home-page] (.getElementById js/document "app")))
 
 (defn init! []
   (mount-root))
