@@ -4,6 +4,9 @@
       [reagent.dom :as rdom]))
 
 
+
+
+
 ;; -------------------------
 ;; state
 ;(defstruct Point :x :y)
@@ -75,7 +78,7 @@
                       ;; note the keyword for this method
                      :reagent-render  (fn [a b c]
                                           [:div {:style {:margin-left "260px"}}
-                                            [:canvas {:id "canvas":style {:width "800px" :height "800px"}}]])})))
+                                            [:canvas {:id "canvas" :style {:width "800px" :height "800px"}}]])})))
 
 (defn home-page []
  [:div
