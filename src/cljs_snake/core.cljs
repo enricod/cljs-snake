@@ -17,6 +17,7 @@
                :hiddenLayers 3
                :hiddenNodes 2})
 
+
 (def app-state (r/atom {
                         :highScore 0
                         :mutationRate 0.05
@@ -33,6 +34,7 @@
 (defn get-random-cell [settings]
   (let [cells (chessboard-cells-nr settings)]
     (list (rand-int (first cells )) (rand-int (second cells)))))
+
 
 (defn create-snake [settings]
  {  :score 0
@@ -53,6 +55,7 @@
    :sameBest 0})
 
 
+
 (defn draw-canvas-contents [ canvas]
   (let [ ctx (.getContext canvas "2d")
         w (.-clientWidth canvas)
@@ -63,6 +66,8 @@
     (.moveTo ctx w 0)
     (.lineTo ctx 0 h)
     (.stroke ctx)))
+
+
 
 (defn simple-component []
   [:div
@@ -75,26 +80,30 @@
 
 ;; -------------------------
 ;; Views
-
-(defn canvas-component [a b c]
+;;
+(defn canvas-component [settings a b c]
  (let [state (r/atom {})] ;; you can include state
    (r/create-class  {
                      :component-did-mount (fn [this] (draw-canvas-contents
                        ;; per ora non so fare altro ... ci sarà un altro modo senza usare getElementById
-                                                      (rdom/dom-node  (. js/document (getElementById "canvas")))));(fn [] (println "I mounted"))
+                                                       (rdom/dom-node  (. js/document (getElementById "canvas")))))
                      :display-name "canvas-component"
                       ;; note the keyword for this method
                      :reagent-render  (fn [a b c]
                                           [:div {:style {:margin-left "260px"}}
-                                            [:canvas {:id "canvas" :style {:width "800px" :height "800px"}}]])})))
+                                            [:canvas {:id "canvas"
+                                                      :style {:width (str (:chessboardWidth settings) "px")
+                                                              :height (str (:chessboardHeight settings) "px")}}]])})))
 
 (defn home-page []
  [:div
     [:h2 "Snake AI in clojurescript"]
     [:div
-       [:div {:style {:width "250px" :float "left"}}
-        [:input {:type "button" :value "start" :on-click (fn[x] (js/console.log "start clicked ..."))}]]
-       [canvas-component "a" "b" "c"]]
+       [:div {:style {:width "250px"
+                      :float "left"}}
+        [:input {:type "button" :value "start"
+                 :on-click (fn[x] (js/console.log "start clicked ..."))}]]
+       [canvas-component settings "a" "b" "c"]]
     [simple-component]])
 
 
