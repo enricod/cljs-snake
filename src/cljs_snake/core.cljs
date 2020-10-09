@@ -11,7 +11,9 @@
 ;; state
 ;(defstruct Point :x :y)
 
-(def settings {:dotSize 20
+(def settings {:chessboardWidth 400
+               :chessboardHeight 400
+               :squareSize 20
                :hiddenLayers 3
                :hiddenNodes 2})
 
@@ -21,6 +23,16 @@
                         :fps 100
                         :population []}))  ;; elenco di snakes
 
+
+(defn chessboard-cells-nr [settings]
+  (list
+    (int (/ (:chessboardWidth settings) (:squareSize settings)))
+    (int (/ (:chessboardHeight settings) (:squareSize settings)))))
+
+
+(defn random-cell [settings]
+  ;; posizione di una cella a caso sulla scacchiera
+  (list (rand-int 10) (rand-int 10)))
 
 (defn create-snake [settings]
  {  :score 0
@@ -35,7 +47,6 @@
 (defn create-population [n]
  {
    :snakes (map #(create-snake settings) (range n))
-
    :bestSnake 0
    :gen 0
    :bestSnakeScore 0
