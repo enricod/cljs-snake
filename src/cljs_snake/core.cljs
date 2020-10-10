@@ -45,9 +45,9 @@
     (int (/ (:chessboardHeight settings) (:squareSize settings)))))
 
 
-(defn get-random-tile [settings]
-  (let [tiles (chessboard-tiles-nr settings)]
-    (list (rand-int (first tiles )) (rand-int (second tiles)))))
+(defn get-random-tile [snake settings]
+  (let [n (:tilesNr settings)]
+    [(rand-int n) (rand-int n)]))
 
 
 (defn snake-head [snake]
@@ -88,8 +88,11 @@
   "rimuove ultimo pezzo coda"
   (let [trails (:trails snake)]
    (assoc snake :trails
-     (drop-last  trails ))))
+     (drop-last  trails))))
 
+(defn snake-new-food [snake settings]
+  "riposiziona il cibo FIXME controllare che posizione sia valida"
+  (assoc snake :food (get-random-tile snake settings)))
 
 (defn snake-move [snake settings]
   (let [trails (:trails snake)
@@ -97,7 +100,9 @@
         s2 (assoc snake :trails
           ;; appendiamo nuova testa
             (conj trails (vec (map + (first trails) dir))))]
-       (if (snake-has-eaten? s2) s2 (snake-drop-tail s2))))
+       (if (snake-has-eaten? s2)
+        (snake-new-food s2 settings)
+        (snake-drop-tail s2))))
 
 
 
