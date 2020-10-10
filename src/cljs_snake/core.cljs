@@ -9,6 +9,11 @@
              :dir [1, 0] ;; direction
              :food [50 50]})
 
+(def snake2 {:trails (list [50 10] [49 10] [48 10])
+             :dead false
+             :dir [1, 0] ;; direction
+             :food [50 50]})
+
 (comment
   (def snake1 {:trails (list [10 10] [9 10] [8 10])
                :dead false
@@ -46,11 +51,31 @@
 (defn create-snake [settings]
   snake1)
 
+(defn snake-dead? [snake settings]
+  (let [h1 (first (:trails snake))
+        h1x (first h1)
+        h1y (second h1)
+        tilesNr (:tilesNr settings)]
+   (or
+          (= h1x (inc tilesNr))
+          (= h1x 0)
+          (= h1y 0)
+          (= h1y (inc tilesNr)))))
+
+(defn snake-dead [snake settings]
+  (if (snake-dead? snake settings)
+   (assoc snake :dead true)
+   snake))
+
 (defn snake-move [snake settings]
-  (let [trails (:trails snake) dir (:dir snake)]
-    (assoc snake :trails
-      ;; appendiamo nuova testa
-      (conj trails (vec (map + (first trails) dir))))))
+  (let [trails (:trails snake)
+        dir (:dir snake)
+        s2 (assoc snake :trails
+          ;; appendiamo nuova testa
+            (conj trails (vec (map + (first trails) dir))))]
+       s2))
+
+
 
 
 (defn create-population [n]
