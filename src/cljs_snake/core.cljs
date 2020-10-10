@@ -91,7 +91,7 @@
 
 
 (defn snake-dead [snake settings]
-  "controlla se snake è morto e imposta eventualmente il flag"
+  "controlla se snake è morto e imposta flag corrispondente se necessario"
   (if (snake-dead? snake settings)
    (assoc snake :dead true)
    snake))
@@ -122,7 +122,10 @@
 
 
 (defn simula []
-  (loop [s (:snake @app-state) result []] (if (snake-dead? s settings) (conj result s) (recur (snake-move s settings) (conj result s)))))
+  (loop [s (:snake @app-state) result []]
+   (if (snake-dead? s settings)
+    (conj result s)
+    (recur (snake-move s settings) (conj result s)))))
 
 ;; (repeatedly 10 #(snake-move (:snake @app-state) settings))
 
@@ -135,8 +138,7 @@
 
 
 (defn create-population [n]
- {
-   :snakes (map #(create-snake settings) (range n))
+ { :snakes (map #(create-snake settings) (range n))
    :bestSnake 0
    :gen 0
    :bestSnakeScore 0
