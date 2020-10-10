@@ -4,46 +4,53 @@
       [reagent.dom :as rdom]))
 
 
+(def snake1 {:trails (list [10 10] [9 10] [8 10])
+             :dead false
+             :dir [1, 0] ;; direction
+             :food [50 50]})
 
-
+(comment
+  (def snake1 {:trails (list [10 10] [9 10] [8 10])
+               :dead false
+               :dir [1, 0] ;; direction
+               :food [50 50]}))
 
 ;; -------------------------
 ;; state
 ;(defstruct Point :x :y)
 
-(def settings {:chessboardWidth 800
-               :chessboardHeight 800
-               :squareSize 10
+(def settings {:tilesNr 50
+               :tileSize 12
                :hiddenLayers 3
                :hiddenNodes 2})
 
 
-(def app-state (r/atom {
-                        :highScore 0
-                        :mutationRate 0.05
-                        :fps 100
-                        :population []}))  ;; elenco di snakes
+(def app-state (r/atom { :manualMode true
+                         :highScore 0
+                         :mutationRate 0.05
+                         :fps 100
+                         :population []}))  ;; elenco di snakes
 
 
-(defn chessboard-cells-nr "nr celle scacchiera" [settings]
+(defn chessboard-tiles-nr "nr celle scacchiera" [settings]
   (list
     (int (/ (:chessboardWidth settings) (:squareSize settings)))
     (int (/ (:chessboardHeight settings) (:squareSize settings)))))
 
 
-(defn get-random-cell [settings]
-  (let [cells (chessboard-cells-nr settings)]
-    (list (rand-int (first cells )) (rand-int (second cells)))))
+(defn get-random-tile [settings]
+  (let [tiles (chessboard-tiles-nr settings)]
+    (list (rand-int (first tiles )) (rand-int (second tiles)))))
 
 
 (defn create-snake [settings]
- {  :score 0
-    :lifeLeft 200
-    :xVel 0
-    :yVel 0
-    :dead false
-    :head {:x 0 :y 0}
-    :food {:x 0 :y 0}})
+  snake1)
+
+(defn snake-move [snake settings]
+  (let [trails (:trails snake) dir (:dir snake)]
+    (assoc snake :trails
+      ;; appendiamo nuova testa
+      (conj trails (vec (map + (first trails) dir))))))
 
 
 (defn create-population [n]
@@ -92,15 +99,20 @@
                      :reagent-render  (fn [a b c]
                                           [:div {:style {:margin-left "260px"}}
                                             [:canvas {:id "canvas"
-                                                      :style {:width (str (:chessboardWidth settings) "px")
-                                                              :height (str (:chessboardHeight settings) "px")}}]])})))
+                                                      :style {:width (str (*  (:tilesNr settings) (:tileSize settings)) "px")
+                                                              :height (str (*  (:tilesNr settings) (:tileSize settings)) "px")}}]])})))
+
+
+
 
 (defn home-page []
  [:div
-    [:h2 "Snake AI in clojurescript"]
+    [:h2 "Snake in clojurescript"]
     [:div
        [:div {:style {:width "250px"
                       :float "left"}}
+        [:input {:type "checkbox"}]
+        [:br]
         [:input {:type "button" :value "start"
                  :on-click (fn[x] (js/console.log "start clicked ..."))}]]
        [canvas-component settings "a" "b" "c"]]
