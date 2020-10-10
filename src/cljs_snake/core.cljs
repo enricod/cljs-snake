@@ -7,7 +7,7 @@
 (def snake1 {:trails (list [10 10] [9 10] [8 10])
              :dead false
              :dir [1, 0] ;; direction
-             :food [11 10]})
+             :food [21 10]})
 
 
 (def snake2 {:trails (list [50 10] [49 10] [48 10])
@@ -20,13 +20,25 @@
   (def snake1 {:trails (list [10 10] [9 10] [8 10])
                :dead false
                :dir [1, 0] ;; direction
-               :food [50 50]}))
+               :food [50 50]})
+  (defn game []
+    (while (not (:dead (:snake @app-state)))
+     (do
+          (println (:snake @app-state))
+          (swap! app-state assoc :snake (snake-move (:snake @app-state) settings))))))
+
+
+(comment
+  (loop [x 10 result [] ] (if (= x 0)
+                           result
+                           (recur (dec x) (conj result x)))))
+;;
 
 
 ;; -------------------------
 ;; state
 ;;
-(def settings {:tilesNr 50
+(def settings {:tilesNr 30
                :tileSize 12
                :hiddenLayers 3
                :hiddenNodes 2})
@@ -36,6 +48,7 @@
                          :highScore 0
                          :mutationRate 0.05
                          :fps 100
+                         :snake snake1
                          :population []}))  ;; elenco di snakes
 
 
@@ -70,6 +83,7 @@
           (= h1y 0)
           (= h1y (inc tilesNr)))))
 
+(defn snake-alive? [snake settins] (not (snake-dead? snake settings)))
 
 (defn snake-has-eaten? [snake]
   "torna true se ha mangiato il frutto"
@@ -81,6 +95,8 @@
   (if (snake-dead? snake settings)
    (assoc snake :dead true)
    snake))
+
+
 
 (defn deinc [x] (- x 1))
 
@@ -100,11 +116,22 @@
         s2 (assoc snake :trails
           ;; appendiamo nuova testa
             (conj trails (vec (map + (first trails) dir))))]
-       (if (snake-has-eaten? s2)
-        (snake-new-food s2 settings)
-        (snake-drop-tail s2))))
+       (snake-dead (if (snake-has-eaten? s2)
+                    (snake-new-food s2 settings)
+                    (snake-drop-tail s2)) settings)))
 
 
+(defn simula []
+  (loop [s (:snake @app-state) result []] (if (snake-dead? s settings) (conj result s) (recur (snake-move s settings) (conj result s)))))
+
+;; (repeatedly 10 #(snake-move (:snake @app-state) settings))
+
+(defn game []
+  ;(while (not (:dead (:snake @app-state)))
+  (take 2 (repeatedly
+           (do
+                (println (:dead (:snake @app-state)))
+                (swap! app-state assoc :snake (snake-move (:snake @app-state) settings))))))
 
 
 (defn create-population [n]
