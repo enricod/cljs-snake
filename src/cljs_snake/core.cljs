@@ -7,12 +7,14 @@
 (def snake1 {:trails (list [10 10] [9 10] [8 10])
              :dead false
              :dir [1, 0] ;; direction
-             :food [50 50]})
+             :food [11 10]})
+
 
 (def snake2 {:trails (list [50 10] [49 10] [48 10])
              :dead false
              :dir [1, 0] ;; direction
              :food [50 50]})
+
 
 (comment
   (def snake1 {:trails (list [10 10] [9 10] [8 10])
@@ -20,10 +22,10 @@
                :dir [1, 0] ;; direction
                :food [50 50]}))
 
+
 ;; -------------------------
 ;; state
-;(defstruct Point :x :y)
-
+;;
 (def settings {:tilesNr 50
                :tileSize 12
                :hiddenLayers 3
@@ -48,24 +50,46 @@
     (list (rand-int (first tiles )) (rand-int (second tiles)))))
 
 
+(defn snake-head [snake]
+   "head of the snake"
+   (first (:trails snake)))
+
+
 (defn create-snake [settings]
   snake1)
 
+
 (defn snake-dead? [snake settings]
-  (let [h1 (first (:trails snake))
+  "FIXME controllare che non vada contro se stesso"
+  (let [h1 (snake-head snake)
         h1x (first h1)
         h1y (second h1)
         tilesNr (:tilesNr settings)]
-   (or
-          (= h1x (inc tilesNr))
+   (or    (= h1x (inc tilesNr))
           (= h1x 0)
           (= h1y 0)
           (= h1y (inc tilesNr)))))
 
+
+(defn snake-has-eaten? [snake]
+  "torna true se ha mangiato il frutto"
+  (= (snake-head snake) (:food snake)))
+
+
 (defn snake-dead [snake settings]
+  "controlla se snake è morto e imposta eventualmente il flag"
   (if (snake-dead? snake settings)
    (assoc snake :dead true)
    snake))
+
+(defn deinc [x] (- x 1))
+
+(defn snake-drop-tail [snake]
+  "rimuove ultimo pezzo coda"
+  (let [trails (:trails snake)]
+   (assoc snake :trails
+     (drop-last  trails ))))
+
 
 (defn snake-move [snake settings]
   (let [trails (:trails snake)
@@ -73,7 +97,7 @@
         s2 (assoc snake :trails
           ;; appendiamo nuova testa
             (conj trails (vec (map + (first trails) dir))))]
-       s2))
+       (if (snake-has-eaten? s2) s2 (snake-drop-tail s2))))
 
 
 
