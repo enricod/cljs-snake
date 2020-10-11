@@ -45,6 +45,7 @@
 
 
 (def app-state (r/atom { :manualMode true
+                         :running true
                          :highScore 0
                          :mutationRate 0.05
                          :fps 100
@@ -83,7 +84,9 @@
           (= h1y 0)
           (= h1y (inc tilesNr)))))
 
+
 (defn snake-alive? [snake settins] (not (snake-dead? snake settings)))
+
 
 (defn snake-has-eaten? [snake]
   "torna true se ha mangiato il frutto"
@@ -96,10 +99,6 @@
    (assoc snake :dead true)
    snake))
 
-
-
-(defn deinc [x] (- x 1))
-
 (defn snake-drop-tail [snake]
   "rimuove ultimo pezzo coda"
   (let [trails (:trails snake)]
@@ -111,6 +110,7 @@
   (assoc snake :food (get-random-tile snake settings)))
 
 (defn snake-move [snake settings]
+  "muove il serpente e aggiorna, se necessario, flag di morte e aggiorna posizione cibo"
   (let [trails (:trails snake)
         dir (:dir snake)
         s2 (assoc snake :trails
@@ -129,12 +129,7 @@
 
 ;; (repeatedly 10 #(snake-move (:snake @app-state) settings))
 
-(defn game []
-  ;(while (not (:dead (:snake @app-state)))
-  (take 2 (repeatedly
-           (do
-                (println (:dead (:snake @app-state)))
-                (swap! app-state assoc :snake (snake-move (:snake @app-state) settings))))))
+
 
 
 (defn create-population [n]
@@ -188,6 +183,13 @@
 
 
 
+(defn tick []
+  (if (:running @app-state)
+   (println "tick")))
+
+(defn start-tick []
+  (js/setInterval tick 1000))
+
 (defn home-page []
  [:div
     [:h2 "Snake in clojurescript"]
@@ -196,17 +198,23 @@
                       :float "left"}}
         [:input {:type "checkbox"}]
         [:br]
-        [:input {:type "button" :value "start"
-                 :on-click (fn[x] (js/console.log "start clicked ..."))}]]
+        [:input {:type "button"
+                 :value "start"
+                 :on-click start-tick}]]
        [canvas-component settings "a" "b" "c"]]
     [simple-component]])
+
 
 
 ;; -------------------------
 ;; Initialize app
 
 (defn mount-root []
-  (rdom/render [home-page] (.getElementById js/document "app")))
+   (rdom/render [home-page] (.getElementById js/document "app")))
+
+
+
 
 (defn init! []
+
   (mount-root))
