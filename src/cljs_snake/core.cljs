@@ -158,6 +158,15 @@
 
    canvas))
 
+(defn disegna-mattonella [ctx pos color wRatio hRatio]
+  (do
+      (set! (.-fillStyle ctx) color)
+   (.fillRect ctx
+     (* (first pos) wRatio)
+     (* (second pos) hRatio)
+     (* (:tileSize settings) wRatio)
+     (* (:tileSize settings) hRatio))))
+
 
 (defn draw-snake [canvas snake settings]
   (let [ ctx (.getContext canvas "2d")
@@ -168,12 +177,14 @@
              hRatio (/ (.-height canvas) h)]
          (do
             (println (str "clientw=" w ", clienth=" h ", w=" (.-width canvas) ", h=" (.-height canvas)))
-           (set! (.-fillStyle ctx) "#00FF00")
-           (.fillRect ctx
-             (* (first foodPos) wRatio)
-             (* (second foodPos) hRatio)
-             (* (:tileSize settings) wRatio) 
-             (* (:tileSize settings) hRatio))))))
+            ;; Clean canvas
+            (set! (.-fillStyle ctx) "#ffFFff")
+            (.fillRect ctx 0 0 w h)
+            ;; CIBO
+            (disegna-mattonella ctx foodPos  "#00FF00" wRatio hRatio)
+            ;; SERPENTE
+            (doall (map #(disegna-mattonella ctx (pos-on-canvas %) "#000000" wRatio hRatio) (:trails snake)))))))
+
 
 
 
