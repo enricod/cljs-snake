@@ -162,16 +162,31 @@
     [:span {:style {:color "red"}} " and red "] "text."]])
 
 
+(defn key-handle [evt]
+  (let [key-pressed (.-keyCode evt)]
+   (case key-pressed
+     40 (println (str "DOWN" key-pressed))
+     39 (println (str "RIGHT " key-pressed))
+     38 (println (str "UP " key-pressed))
+     37 (println (str "LEFT " key-pressed))
+     (println (str "altro " key-pressed)))))
 
+
+
+(defn register-key-events []
+  (rdom/dom-node  (. js/document (addEventListener "keydown" key-handle))))
+
+  
 ;; -------------------------
 ;; Views
 ;;
 (defn canvas-component [settings a b c]
  (let [state (r/atom {})] ;; you can include state
    (r/create-class  {
-                     :component-did-mount (fn [this] (draw-canvas-contents
-                       ;; per ora non so fare altro ... ci sarà un altro modo senza usare getElementById
-                                                       (rdom/dom-node  (. js/document (getElementById "canvas")))))
+                     :component-did-mount (fn [this]
+                                           (do
+                                             (register-key-events)
+                                             (draw-canvas-contents (rdom/dom-node  (. js/document (getElementById "canvas"))))))
                      :display-name "canvas-component"
                       ;; note the keyword for this method
                      :reagent-render  (fn [a b c]
