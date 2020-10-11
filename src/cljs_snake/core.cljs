@@ -39,7 +39,7 @@
 ;; state
 ;;
 (def settings {:tilesNr 30
-               :tileSize 12
+               :tileSize 10
                :hiddenLayers 3
                :hiddenNodes 2})
 
@@ -53,13 +53,11 @@
                          :population []}))  ;; elenco di snakes
 
 
-(defn chessboard-tiles-nr "nr celle scacchiera" [settings]
-  (list
-    (int (/ (:chessboardWidth settings) (:squareSize settings)))
-    (int (/ (:chessboardHeight settings) (:squareSize settings)))))
+
 
 
 (defn get-random-tile [snake settings]
+  "FIXME da verificare, perchè non deve tornare alcuno 0"
   (let [n (:tilesNr settings)]
     [(rand-int n) (rand-int n)]))
 
@@ -130,8 +128,6 @@
 ;; (repeatedly 10 #(snake-move (:snake @app-state) settings))
 
 
-
-
 (defn create-population [n]
  { :snakes (map #(create-snake settings) (range n))
    :bestSnake 0
@@ -151,6 +147,31 @@
     (.moveTo ctx w 0)
     (.lineTo ctx 0 h)
     (.stroke ctx)))
+
+
+(defn pos-on-canvas [tile]
+  (list (* (:tileSize settings) (dec (first tile))) (* (:tileSize settings) (dec (second tile))) ))
+
+
+(defn get-canvas []
+  (let [canvas (rdom/dom-node  (. js/document (getElementById "canvas")))]
+
+   canvas))
+
+
+(defn draw-snake [canvas snake settings]
+  (let [ ctx (.getContext canvas "2d")
+        w (.-clientWidth canvas)
+        h (.-clientHeight canvas)]
+       (let [foodPos (pos-on-canvas (:food snake))
+             wRatio (/  (.-width canvas) w)
+             hRatio (/ (.-height canvas) h)]
+         (do
+           (comment (println (str "clientw=" w ", clienth=" h ", w=" (.-width canvas) ", h=" (.-height canvas))))
+           (set! (.-fillStyle ctx) "#00FF00")
+           (.fillRect ctx (first foodPos) (* (second foodPos) hRatio) (:tileSize settings) (* (:tileSize settings) hRatio))))))
+
+
 
 
 
@@ -176,7 +197,7 @@
 (defn register-key-events []
   (rdom/dom-node  (. js/document (addEventListener "keydown" key-handle))))
 
-  
+
 ;; -------------------------
 ;; Views
 ;;
@@ -186,7 +207,7 @@
                      :component-did-mount (fn [this]
                                            (do
                                              (register-key-events)
-                                             (draw-canvas-contents (rdom/dom-node  (. js/document (getElementById "canvas"))))))
+                                             (comment (draw-canvas-contents (get-canvas)))))
                      :display-name "canvas-component"
                       ;; note the keyword for this method
                      :reagent-render  (fn [a b c]
@@ -203,7 +224,9 @@
    (println "tick")))
 
 (defn start-tick []
-  (js/setInterval tick 1000))
+  (do
+    (draw-snake (get-canvas) (:snake @app-state) settings)
+    (js/setInterval tick 5000)))
 
 (defn home-page []
  [:div
