@@ -38,8 +38,8 @@
 ;; -------------------------
 ;; state
 ;;
-(def settings {:tilesNr 30
-               :tileSize 10
+(def settings {:tilesNr 40
+               :tileSize 12
                :hiddenLayers 3
                :hiddenNodes 2})
 
@@ -167,9 +167,13 @@
              wRatio (/  (.-width canvas) w)
              hRatio (/ (.-height canvas) h)]
          (do
-           (comment (println (str "clientw=" w ", clienth=" h ", w=" (.-width canvas) ", h=" (.-height canvas))))
+            (println (str "clientw=" w ", clienth=" h ", w=" (.-width canvas) ", h=" (.-height canvas)))
            (set! (.-fillStyle ctx) "#00FF00")
-           (.fillRect ctx (first foodPos) (* (second foodPos) hRatio) (:tileSize settings) (* (:tileSize settings) hRatio))))))
+           (.fillRect ctx
+             (* (first foodPos) wRatio)
+             (* (second foodPos) hRatio)
+             (* (:tileSize settings) wRatio) 
+             (* (:tileSize settings) hRatio))))))
 
 
 
