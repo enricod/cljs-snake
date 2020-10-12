@@ -158,10 +158,10 @@
 
    canvas))
 
-(defn disegna-mattonella [ctx pos color wRatio hRatio]
+(defn- disegna-mattonella [ctx pos color wRatio hRatio]
   (do
-      (set! (.-fillStyle ctx) color)
-   (.fillRect ctx
+    (set! (.-fillStyle ctx) color)
+    (.fillRect ctx
      (* (first pos) wRatio)
      (* (second pos) hRatio)
      (* (:tileSize settings) wRatio)
@@ -235,8 +235,11 @@
 
 
 (defn tick []
-  (if (:running @app-state)
-   (println "tick")))
+  (do
+   (println "tick")
+
+   (swap! app-state assoc :snake (snake-move (:snake @app-state) settings))
+   (draw-snake (get-canvas) (:snake @app-state) settings)))
 
 (defn start-tick []
   (do
