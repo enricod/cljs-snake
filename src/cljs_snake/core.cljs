@@ -1,5 +1,6 @@
 (ns cljs-snake.core
     (:require
+      [cljs-snake.snake :as s]
       [reagent.core :as r]
       [reagent.dom :as rdom]))
 
@@ -10,10 +11,7 @@
              :food [21 10]})
 
 
-(def snake2 {:trails (list [50 10] [49 10] [48 10])
-             :dead false
-             :dir [1, 0] ;; direction
-             :food [50 50]})
+
 
 
 (comment
@@ -41,7 +39,8 @@
 (def settings {:tilesNr 40
                :tileSize 12
                :hiddenLayers 3
-               :hiddenNodes 2})
+               :hiddenNodes 2
+               :intervalFn (fn [])})
 
 
 (def app-state (r/atom { :manualMode true
@@ -62,9 +61,7 @@
     [(rand-int n) (rand-int n)]))
 
 
-(defn snake-head [snake]
-   "head of the snake"
-   (first (:trails snake)))
+
 
 
 (defn create-snake [settings]
@@ -73,7 +70,7 @@
 
 (defn snake-dead? [snake settings]
   "FIXME controllare che non vada contro se stesso"
-  (let [h1 (snake-head snake)
+  (let [h1 (s/head snake)
         h1x (first h1)
         h1y (second h1)
         tilesNr (:tilesNr settings)]
@@ -88,7 +85,7 @@
 
 (defn snake-has-eaten? [snake]
   "torna true se ha mangiato il frutto"
-  (= (snake-head snake) (:food snake)))
+  (= (s/head snake) (:food snake)))
 
 
 (defn snake-dead [snake settings]
