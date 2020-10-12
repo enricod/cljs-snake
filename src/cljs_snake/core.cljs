@@ -42,8 +42,8 @@
     :xVel 0
     :yVel 0
     :dead false
-    :head {:x 0 :y 0}
-    :food {:x 0 :y 0}})
+    :head (get-random-cell settings)
+    :food (get-random-cell settings)})
 
 
 (defn create-population [n]
