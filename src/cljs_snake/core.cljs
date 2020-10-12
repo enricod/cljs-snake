@@ -5,14 +5,6 @@
       [reagent.dom :as rdom]))
 
 
-(def snake1 {:trails (list [10 10] [9 10] [8 10])
-             :dead false
-             :dir [1, 0] ;; direction
-             :food [21 10]})
-
-
-
-
 
 (comment
   (def snake1 {:trails (list [10 10] [9 10] [8 10])
@@ -62,10 +54,8 @@
 
 
 
-
-
 (defn create-snake [settings]
-  snake1)
+  s/snake1)
 
 
 (defn snake-dead? [snake settings]
@@ -165,6 +155,8 @@
      (* (:tileSize settings) hRatio))))
 
 
+
+
 (defn draw-snake [canvas snake settings]
   (let [ ctx (.getContext canvas "2d")
         w (.-clientWidth canvas)
@@ -181,9 +173,6 @@
             (disegna-mattonella ctx foodPos  "#00FF00" wRatio hRatio)
             ;; SERPENTE
             (doall (map #(disegna-mattonella ctx (pos-on-canvas %) "#000000" wRatio hRatio) (:trails snake)))))))
-
-
-
 
 
 
