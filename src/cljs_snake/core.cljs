@@ -150,7 +150,7 @@
 
 
 (defn pos-on-canvas [tile]
-  (list (* (:tileSize settings) (dec (first tile))) (* (:tileSize settings) (dec (second tile))) ))
+  (list (* (:tileSize settings) (dec (first tile))) (* (:tileSize settings) (dec (second tile)))))
 
 
 (defn get-canvas []
@@ -244,7 +244,7 @@
 (defn start-tick []
   (do
     (draw-snake (get-canvas) (:snake @app-state) settings)
-    (js/setInterval tick 5000)))
+    (js/setInterval tick 1000)))
 
 (defn home-page []
  [:div
