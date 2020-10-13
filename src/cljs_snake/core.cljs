@@ -1,19 +1,9 @@
 (ns cljs-snake.core
     (:require
+      [cljs-snake.snake :as s]
       [reagent.core :as r]
       [reagent.dom :as rdom]))
 
-
-(def snake1 {:trails (list [10 10] [9 10] [8 10])
-             :dead false
-             :dir [1, 0] ;; direction
-             :food [21 10]})
-
-
-(def snake2 {:trails (list [50 10] [49 10] [48 10])
-             :dead false
-             :dir [1, 0] ;; direction
-             :food [50 50]})
 
 
 (comment
@@ -41,7 +31,8 @@
 (def settings {:tilesNr 40
                :tileSize 12
                :hiddenLayers 3
-               :hiddenNodes 2})
+               :hiddenNodes 2
+               :intervalFn (fn [])})
 
 
 (def app-state (r/atom { :manualMode true
@@ -62,18 +53,14 @@
     [(rand-int n) (rand-int n)]))
 
 
-(defn snake-head [snake]
-   "head of the snake"
-   (first (:trails snake)))
-
 
 (defn create-snake [settings]
-  snake1)
+  s/snake1)
 
 
 (defn snake-dead? [snake settings]
   "FIXME controllare che non vada contro se stesso"
-  (let [h1 (snake-head snake)
+  (let [h1 (s/head snake)
         h1x (first h1)
         h1y (second h1)
         tilesNr (:tilesNr settings)]
@@ -88,7 +75,7 @@
 
 (defn snake-has-eaten? [snake]
   "torna true se ha mangiato il frutto"
-  (= (snake-head snake) (:food snake)))
+  (= (s/head snake) (:food snake)))
 
 
 (defn snake-dead [snake settings]
@@ -158,14 +145,16 @@
 
    canvas))
 
-(defn disegna-mattonella [ctx pos color wRatio hRatio]
+(defn- disegna-mattonella [ctx pos color wRatio hRatio]
   (do
-      (set! (.-fillStyle ctx) color)
-   (.fillRect ctx
+    (set! (.-fillStyle ctx) color)
+    (.fillRect ctx
      (* (first pos) wRatio)
      (* (second pos) hRatio)
      (* (:tileSize settings) wRatio)
      (* (:tileSize settings) hRatio))))
+
+
 
 
 (defn draw-snake [canvas snake settings]
@@ -184,9 +173,6 @@
             (disegna-mattonella ctx foodPos  "#00FF00" wRatio hRatio)
             ;; SERPENTE
             (doall (map #(disegna-mattonella ctx (pos-on-canvas %) "#000000" wRatio hRatio) (:trails snake)))))))
-
-
-
 
 
 
@@ -235,13 +221,16 @@
 
 
 (defn tick []
-  (if (:running @app-state)
-   (println "tick")))
+  (do
+   (println "tick")
+
+   (swap! app-state assoc :snake (snake-move (:snake @app-state) settings))
+   (draw-snake (get-canvas) (:snake @app-state) settings)))
 
 (defn start-tick []
   (do
     (draw-snake (get-canvas) (:snake @app-state) settings)
-    (js/setInterval tick 5000)))
+    (js/setInterval tick 1000)))
 
 (defn home-page []
  [:div
