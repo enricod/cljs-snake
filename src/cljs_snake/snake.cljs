@@ -16,8 +16,7 @@
              :dir [1, 0] ;; direction
              :food [50 50]})
 
-
-(defn head [snake]
+(defn shead [snake]
    "head of the snake"
    (first (:trails snake)))
 
@@ -29,6 +28,13 @@
      (drop-last  trails))))
 
 
+
+(defn get-random-tile [snake settings]
+  "FIXME da verificare, perchè non deve tornare alcuno 0"
+  (let [n (:tilesNr settings)]
+    [(rand-int n) (rand-int n)]))
+
+
 (defn new-food [snake settings]
   "riposiziona il cibo FIXME controllare che posizione sia valida"
   (assoc snake :food (get-random-tile snake settings)))
@@ -36,4 +42,19 @@
 
 (defn has-eaten? [snake]
   "torna true se ha mangiato il frutto"
-  (= (s/head snake) (:food snake)))
+  (= (shead snake) (:food snake)))
+
+
+(defn dead? [snake settings]
+  "FIXME controllare che non vada contro se stesso"
+  (let [h1 (shead snake)
+        h1x (first h1)
+        h1y (second h1)
+        tilesNr (:tilesNr settings)]
+   (or    (= h1x (inc tilesNr))
+          (= h1x 0)
+          (= h1y 0)
+          (= h1y (inc tilesNr)))))
+
+
+(defn alive? [snake settings] (not (dead? snake settings)))

@@ -40,17 +40,11 @@
                          :highScore 0
                          :mutationRate 0.05
                          :fps 100
-                         :snake snake1
+                         :snake s/snake1
                          :population []}))  ;; elenco di snakes
 
 
 
-
-
-(defn get-random-tile [snake settings]
-  "FIXME da verificare, perchè non deve tornare alcuno 0"
-  (let [n (:tilesNr settings)]
-    [(rand-int n) (rand-int n)]))
 
 
 
@@ -58,30 +52,11 @@
   s/snake1)
 
 
-(defn snake-dead? [snake settings]
-  "FIXME controllare che non vada contro se stesso"
-  (let [h1 (s/head snake)
-        h1x (first h1)
-        h1y (second h1)
-        tilesNr (:tilesNr settings)]
-   (or    (= h1x (inc tilesNr))
-          (= h1x 0)
-          (= h1y 0)
-          (= h1y (inc tilesNr)))))
-
-
-(defn snake-alive? [snake settins] (not (snake-dead? snake settings)))
-
-
-
-
 (defn snake-dead [snake settings]
   "controlla se snake è morto e imposta flag corrispondente se necessario"
-  (if (snake-dead? snake settings)
+  (if (s/dead? snake settings)
    (assoc snake :dead true)
    snake))
-
-
 
 
 
@@ -99,7 +74,7 @@
 
 (defn simula []
   (loop [s (:snake @app-state) result []]
-   (if (snake-dead? s settings)
+   (if (s/dead? s settings)
     (conj result s)
     (recur (snake-move s settings) (conj result s)))))
 
