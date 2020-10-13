@@ -20,3 +20,20 @@
 (defn head [snake]
    "head of the snake"
    (first (:trails snake)))
+
+
+(defn drop-tail [snake]
+  "rimuove ultimo pezzo coda"
+  (let [trails (:trails snake)]
+   (assoc snake :trails
+     (drop-last  trails))))
+
+
+(defn new-food [snake settings]
+  "riposiziona il cibo FIXME controllare che posizione sia valida"
+  (assoc snake :food (get-random-tile snake settings)))
+
+
+(defn has-eaten? [snake]
+  "torna true se ha mangiato il frutto"
+  (= (s/head snake) (:food snake)))

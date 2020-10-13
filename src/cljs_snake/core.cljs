@@ -73,9 +73,6 @@
 (defn snake-alive? [snake settins] (not (snake-dead? snake settings)))
 
 
-(defn snake-has-eaten? [snake]
-  "torna true se ha mangiato il frutto"
-  (= (s/head snake) (:food snake)))
 
 
 (defn snake-dead [snake settings]
@@ -84,15 +81,9 @@
    (assoc snake :dead true)
    snake))
 
-(defn snake-drop-tail [snake]
-  "rimuove ultimo pezzo coda"
-  (let [trails (:trails snake)]
-   (assoc snake :trails
-     (drop-last  trails))))
 
-(defn snake-new-food [snake settings]
-  "riposiziona il cibo FIXME controllare che posizione sia valida"
-  (assoc snake :food (get-random-tile snake settings)))
+
+
 
 (defn snake-move [snake settings]
   "muove il serpente e aggiorna, se necessario, flag di morte e aggiorna posizione cibo"
@@ -101,9 +92,9 @@
         s2 (assoc snake :trails
           ;; appendiamo nuova testa
             (conj trails (vec (map + (first trails) dir))))]
-       (snake-dead (if (snake-has-eaten? s2)
-                    (snake-new-food s2 settings)
-                    (snake-drop-tail s2)) settings)))
+       (snake-dead (if (s/has-eaten? s2)
+                    (s/new-food s2 settings)
+                    (s/drop-tail s2)) settings)))
 
 
 (defn simula []
