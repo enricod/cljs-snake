@@ -150,7 +150,7 @@
 
 
 (defn pos-on-canvas [tile]
-  (list (* (:tileSize settings) (dec (first tile))) (* (:tileSize settings) (dec (second tile))) ))
+  (list (* (:tileSize settings) (dec (first tile))) (* (:tileSize settings) (dec (second tile)))))
 
 
 (defn get-canvas []
@@ -264,7 +264,6 @@
 
 (defn mount-root []
    (rdom/render [home-page] (.getElementById js/document "app")))
-
 
 
 
