@@ -45,15 +45,12 @@
 
 
 
-
-
-
 (defn create-snake [settings]
   s/snake1)
 
 
 (defn snake-dead [snake settings]
-  "controlla se snake è morto e imposta flag corrispondente se necessario"
+  "controlla se serpente è morto e imposta flag corrispondente, se necessario"
   (if (s/dead? snake settings)
    (assoc snake :dead true)
    snake))
@@ -61,7 +58,7 @@
 
 
 (defn snake-move [snake settings]
-  "muove il serpente e aggiorna, se necessario, flag di morte e aggiorna posizione cibo"
+  "muove il serpente e aggiorna, se necessario, flag di morte; inoltre aggiorna posizione cibo"
   (let [trails (:trails snake)
         dir (:dir snake)
         s2 (assoc snake :trails
@@ -70,6 +67,7 @@
        (snake-dead (if (s/has-eaten? s2)
                     (s/new-food s2 settings)
                     (s/drop-tail s2)) settings)))
+
 
 
 (defn simula []

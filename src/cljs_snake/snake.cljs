@@ -4,7 +4,6 @@
       [reagent.dom :as rdom]))
 
 
-
 (def snake1 {:trails (list [10 10] [9 10] [8 10])
              :dead false
              :dir [1, 0] ;; direction
@@ -16,6 +15,7 @@
              :dir [1, 0] ;; direction
              :food [50 50]})
 
+
 (defn shead [snake]
    "head of the snake"
    (first (:trails snake)))
@@ -26,7 +26,6 @@
   (let [trails (:trails snake)]
    (assoc snake :trails
      (drop-last  trails))))
-
 
 
 (defn get-random-tile [snake settings]
@@ -57,4 +56,6 @@
           (= h1y (inc tilesNr)))))
 
 
-(defn alive? [snake settings] (not (dead? snake settings)))
+(defn alive? [snake settings]
+  (not (dead? snake settings)))
+
