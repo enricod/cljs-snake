@@ -28,8 +28,8 @@
 ;; -------------------------
 ;; state
 ;;
-(def settings {:tilesNr 40
-               :tileSize 12
+(def settings {:tilesNr 20
+               :tileSize 20
                :hiddenLayers 3
                :hiddenNodes 2
                :intervalFn (fn [])})
@@ -150,13 +150,17 @@
     [:span {:style {:color "red"}} " and red "] "text."]])
 
 
+(defn do-change-snake-dir [snk d]
+  (swap! app-state assoc :snake (assoc snk :dir d)))
+
 (defn key-handle [evt]
-  (let [key-pressed (.-keyCode evt)]
+  (let [key-pressed (.-keyCode evt)
+        snk (:snake @app-state)]
    (case key-pressed
-     40 (println (str "DOWN" key-pressed))
-     39 (println (str "RIGHT " key-pressed))
-     38 (println (str "UP " key-pressed))
-     37 (println (str "LEFT " key-pressed))
+     40 (do-change-snake-dir snk [0 1]) ; DOWN
+     39 (do-change-snake-dir snk [1 0])
+     38 (do-change-snake-dir snk [ 0 -1]); UP
+     37 (do-change-snake-dir snk [-1 0]) ; LEFT
      (println (str "altro " key-pressed)))))
 
 
@@ -189,14 +193,14 @@
 (defn tick []
   (do
    (println "tick")
-
    (swap! app-state assoc :snake (snake-move (:snake @app-state) settings))
    (draw-snake (get-canvas) (:snake @app-state) settings)))
+
 
 (defn start-tick []
   (do
     (draw-snake (get-canvas) (:snake @app-state) settings)
-    (js/setInterval tick 1000)))
+    (js/setInterval tick 250)))
 
 (defn home-page []
  [:div
