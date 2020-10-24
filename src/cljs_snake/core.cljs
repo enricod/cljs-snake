@@ -28,23 +28,22 @@
 ;; -------------------------
 ;; state
 ;;
-(def settings {:tilesNr 20
+(def settings {:tilesNr 25
+               :tickIntervalMs 250
                :tileSize 20
                :hiddenLayers 3
                :hiddenNodes 2
                :intervalFn (fn [])})
 
 
+
 (def app-state (r/atom { :manualMode true
-                         :running true
+                         :manualRunning false
                          :highScore 0
                          :mutationRate 0.05
                          :fps 100
                          :snake s/snake1
                          :population []}))  ;; elenco di snakes
-
-
-
 
 
 
@@ -191,16 +190,24 @@
 
 
 (defn tick []
-  (do
-   (println "tick")
-   (swap! app-state assoc :snake (snake-move (:snake @app-state) settings))
-   (draw-snake (get-canvas) (:snake @app-state) settings)))
+  (let [isRunning (:manualRunning @app-state)]
+   (if isRunning
+    (do
+     (swap! app-state assoc :snake (snake-move (:snake @app-state) settings))
+     (draw-snake (get-canvas) (:snake @app-state) settings)))))
 
 
 (defn start-tick []
-  (do
-    (draw-snake (get-canvas) (:snake @app-state) settings)
-    (js/setInterval tick 250)))
+  (let [isRunning (:manualRunning @app-state)]
+     (if isRunning
+       (do
+        (js/clearInterval (:tickFn @app-state))
+        (swap! app-state assoc :manualRunning false))
+       (do
+        (draw-snake (get-canvas) (:snake @app-state) settings)
+        (swap! app-state assoc
+          :manualRunning true
+          :tickFn (js/setInterval tick (:tickIntervalMs settings)))))))
 
 (defn home-page []
  [:div
@@ -211,10 +218,10 @@
         [:input {:type "checkbox"}]
         [:br]
         [:input {:type "button"
-                 :value "start"
+                 :value (if (:manualRunning @app-state) "stop" "start")
                  :on-click start-tick}]]
-       [canvas-component settings "a" "b" "c"]]
-    [simple-component]])
+       [canvas-component settings "a" "b" "c"]]])
+
 
 
 
@@ -224,8 +231,5 @@
 (defn mount-root []
    (rdom/render [home-page] (.getElementById js/document "app")))
 
-
-
 (defn init! []
-
   (mount-root))
