@@ -189,7 +189,7 @@
 
 (defn tick []
   (let [isRunning (:manualRunning @app-state)]
-   (if isRunning
+   (if (and isRunning (not (:dead (:snake @app-state))))
     (do
      (swap! app-state assoc :snake (snake-move (:snake @app-state) settings))
      (draw-snake (get-canvas) (:snake @app-state) settings)))))
