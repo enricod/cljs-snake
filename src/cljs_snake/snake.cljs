@@ -50,8 +50,8 @@
   (first (filter f coll)))
 
 
-(defn random-points-seq
-  "sequenza  (lazy-seq) di punti sulla scacchiera casuali < di max"
+(defn random-points-lazyseq
+  "lazy sequenza di punti sulla scacchiera casuali [1 .. max]"
   ([max] (random-points-seq max (get-random-point max))) ([max n] (lazy-seq (cons n (random-points-seq max (get-random-point max))))))
 
 
@@ -59,13 +59,7 @@
   "torna una posizione casuale VALIDA sulla scacchiera (da 1 a nr mattonelle)"
    [snake settings]
    (find-first #(non-collide? snake %)
-    (random-points-seq (:tilesNr settings))))
-
-
-;(defn random-ints-seq
-;  "sequenza  (lazy-seq) di numeri casuali"
-;  ([] (random-points-seq (rand-int 100))) ([n] (lazy-seq (cons n (random-points-seq (rand-int 100))))))
-
+    (random-points-lazyseq (:tilesNr settings))))
 
 
 
