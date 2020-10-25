@@ -130,7 +130,7 @@
              wRatio (/  (.-width canvas) w)
              hRatio (/ (.-height canvas) h)]
          (do
-            (println (str "clientw=" w ", clienth=" h ", w=" (.-width canvas) ", h=" (.-height canvas)))
+            ; (println (str "clientw=" w ", clienth=" h ", w=" (.-width canvas) ", h=" (.-height canvas)))
             ;; Clean canvas
             (set! (.-fillStyle ctx) "#ffFFff")
             (.fillRect ctx 0 0 w h)

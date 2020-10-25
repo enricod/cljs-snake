@@ -28,11 +28,16 @@
      (drop-last  trails))))
 
 
+(defn collide? [snake point]
+  (some #(= point %) (:trails snake)))
+
 
 (defn get-random-tile [snake settings]
-  "FIXME da verificare, perchè non deve tornare alcuno 0"
+  "torna una mattonella valida (non occupata dal serpente per esempio)"
   (let [n (:tilesNr settings)]
-    [(rand-int n) (rand-int n)]))
+       [(inc (rand-int n)) (inc (rand-int n))]))
+
+
 
 
 (defn new-food [snake settings]
