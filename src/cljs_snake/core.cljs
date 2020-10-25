@@ -89,17 +89,6 @@
 
 
 
-(defn draw-canvas-contents [ canvas]
-  (let [ ctx (.getContext canvas "2d")
-        w (.-clientWidth canvas)
-        h (.-clientHeight canvas)]
-    (.beginPath ctx)
-    (.moveTo ctx 0 0)
-    (.lineTo ctx w h)
-    (.moveTo ctx w 0)
-    (.lineTo ctx 0 h)
-    (.stroke ctx)))
-
 
 (defn pos-on-canvas [tile]
   (list (* (:tileSize settings) (dec (first tile))) (* (:tileSize settings) (dec (second tile)))))
@@ -140,6 +129,12 @@
             (doall (map #(disegna-mattonella ctx (pos-on-canvas %) "#000000" wRatio hRatio) (:trails snake)))))))
 
 
+(defn posizione-valida?
+  "true se valore non è nella lista"
+  [lista valore]
+  (not (some #(= valore %) lista)))
+
+
 
 (defn simple-component []
   [:div
@@ -149,15 +144,18 @@
     [:span {:style {:color "red"}} " and red "] "text."]])
 
 
+
 (defn do-change-snake-dir [snk d]
   (swap! app-state assoc :snake (assoc snk :dir d)))
+
+
 
 (defn key-handle [evt]
   (let [key-pressed (.-keyCode evt)
         snk (:snake @app-state)]
    (case key-pressed
      40 (do-change-snake-dir snk [0 1]) ; DOWN
-     39 (do-change-snake-dir snk [1 0])
+     39 (do-change-snake-dir snk [1 0]) ; RIGHT
      38 (do-change-snake-dir snk [ 0 -1]); UP
      37 (do-change-snake-dir snk [-1 0]) ; LEFT
      (println (str "altro " key-pressed)))))
@@ -189,6 +187,19 @@
 
 
 
+(defn random-ints-seq
+  "sequenza  (lazy-seq) di numeri casuali"
+  ([] (random-points-seq (rand-int 100))) ([n] (lazy-seq (cons n (random-points-seq (rand-int 100))))))
+
+(defn get-random-point [n]
+  "torna una posizione casuale sulla scacchiera (da 1 a nr mattonelle)"
+       [(inc (rand-int n)) (inc (rand-int n))])
+
+(defn random-points-seq
+  "sequenza  (lazy-seq) di numeri casuali < di max"
+  ([max] (random-points-seq max (get-random-point max))) ([max n] (lazy-seq (cons n (random-points-seq max (get-random-point max))))))
+
+
 (defn tick []
   (let [isRunning (:manualRunning @app-state)]
    (if isRunning
@@ -208,6 +219,8 @@
         (swap! app-state assoc
           :manualRunning true
           :tickFn (js/setInterval tick (:tickIntervalMs settings)))))))
+
+
 
 (defn home-page []
  [:div

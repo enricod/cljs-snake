@@ -32,8 +32,9 @@
   (some #(= point %) (:trails snake)))
 
 
+
 (defn get-random-tile [snake settings]
-  "torna una mattonella valida (non occupata dal serpente per esempio)"
+  "torna una posizione casuale sulla scacchiera (da 1 a nr mattonelle)"
   (let [n (:tilesNr settings)]
        [(inc (rand-int n)) (inc (rand-int n))]))
 
