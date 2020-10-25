@@ -187,19 +187,6 @@
 
 
 
-(defn random-ints-seq
-  "sequenza  (lazy-seq) di numeri casuali"
-  ([] (random-points-seq (rand-int 100))) ([n] (lazy-seq (cons n (random-points-seq (rand-int 100))))))
-
-(defn get-random-point [n]
-  "torna una posizione casuale sulla scacchiera (da 1 a nr mattonelle)"
-       [(inc (rand-int n)) (inc (rand-int n))])
-
-(defn random-points-seq
-  "sequenza  (lazy-seq) di punti sulla scacchiera casuali < di max"
-  ([max] (random-points-seq max (get-random-point max))) ([max n] (lazy-seq (cons n (random-points-seq max (get-random-point max))))))
-
-
 (defn tick []
   (let [isRunning (:manualRunning @app-state)]
    (if isRunning

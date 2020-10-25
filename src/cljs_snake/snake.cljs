@@ -33,9 +33,10 @@
   [snake point]
   (some #(= point %) (:trails snake)))
 
-(defn get-random-point [n]
+(defn get-random-point
   "torna una posizione casuale sulla scacchiera (da 1 a nr mattonelle)"
-       [(inc (rand-int n)) (inc (rand-int n))])
+  [n]
+  [(inc (rand-int n)) (inc (rand-int n))])
 
 
 (defn get-random-tile [snake settings]
@@ -44,10 +45,9 @@
        [(inc (rand-int n)) (inc (rand-int n))]))
 
 
-(defn random-ints-seq
-  "sequenza  (lazy-seq) di numeri casuali"
-  ([] (random-points-seq (rand-int 100))) ([n] (lazy-seq (cons n (random-points-seq (rand-int 100))))))
-
+;(defn random-ints-seq
+;  "sequenza  (lazy-seq) di numeri casuali"
+;  ([] (random-points-seq (rand-int 100))) ([n] (lazy-seq (cons n (random-points-seq (rand-int 100))))))
 
 
 (defn random-points-seq
