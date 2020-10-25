@@ -52,7 +52,8 @@
 
 (defn random-points-lazyseq
   "lazy sequenza di punti sulla scacchiera casuali [1 .. max]"
-  ([max] (random-points-seq max (get-random-point max))) ([max n] (lazy-seq (cons n (random-points-seq max (get-random-point max))))))
+  ([max] (random-points-lazyseq max (get-random-point max)))
+  ([max n] (lazy-seq (cons n (random-points-lazyseq max (get-random-point max))))))
 
 
 (defn get-random-tile
