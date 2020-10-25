@@ -196,7 +196,7 @@
        [(inc (rand-int n)) (inc (rand-int n))])
 
 (defn random-points-seq
-  "sequenza  (lazy-seq) di numeri casuali < di max"
+  "sequenza  (lazy-seq) di punti sulla scacchiera casuali < di max"
   ([max] (random-points-seq max (get-random-point max))) ([max n] (lazy-seq (cons n (random-points-seq max (get-random-point max))))))
 
 

@@ -28,9 +28,14 @@
      (drop-last  trails))))
 
 
-(defn collide? [snake point]
+(defn collide?
+  "true se il punto collide con il serpente"
+  [snake point]
   (some #(= point %) (:trails snake)))
 
+(defn get-random-point [n]
+  "torna una posizione casuale sulla scacchiera (da 1 a nr mattonelle)"
+       [(inc (rand-int n)) (inc (rand-int n))])
 
 
 (defn get-random-tile [snake settings]
@@ -39,6 +44,15 @@
        [(inc (rand-int n)) (inc (rand-int n))]))
 
 
+(defn random-ints-seq
+  "sequenza  (lazy-seq) di numeri casuali"
+  ([] (random-points-seq (rand-int 100))) ([n] (lazy-seq (cons n (random-points-seq (rand-int 100))))))
+
+
+
+(defn random-points-seq
+  "sequenza  (lazy-seq) di punti sulla scacchiera casuali < di max"
+  ([max] (random-points-seq max (get-random-point max))) ([max n] (lazy-seq (cons n (random-points-seq max (get-random-point max))))))
 
 
 (defn new-food [snake settings]
