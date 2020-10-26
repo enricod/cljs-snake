@@ -219,7 +219,8 @@
         [:br]
         [:input {:type "button"
                  :value (if (:manualRunning @app-state) "stop" "start")
-                 :on-click start-tick}]]
+                 :on-click start-tick}]
+        [:p (if (:dead (:snake @app-state)) "Sorry, you died :(" "")]]
        [canvas-component settings "a" "b" "c"]]])
 
 
