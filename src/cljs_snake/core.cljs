@@ -33,6 +33,7 @@
                :tileSize 20
                :hiddenLayers 3
                :hiddenNodes 2
+               :snakeLifeMax 200
                :intervalFn (fn [])})
 
 
@@ -51,11 +52,11 @@
   s/snake1)
 
 
-(defn snake-dead [snake settings]
+(defn snake-update-post-move [snake settings]
   "controlla se snake è morto e imposta flag corrispondente se necessario"
   (if (s/dead? snake settings)
-   (assoc snake :dead true)
-   snake))
+   (assoc snake :dead true :lifeTime (inc (:lifeTime snake)))
+   (assoc snake :lifeTime (inc (:lifeTime snake)))))
 
 
 
@@ -66,9 +67,9 @@
         s2 (assoc snake :trails
           ;; appendiamo nuova testa
             (conj trails (vec (map + (first trails) dir))))]
-       (snake-dead (if (s/has-eaten? s2)
-                    (s/new-food s2 settings)
-                    (s/drop-tail s2)) settings)))
+       (snake-update-post-move (if (s/has-eaten? s2)
+                                (s/new-food s2 settings)
+                                (s/drop-tail s2)) settings)))
 
 
 (defn simula []
@@ -170,58 +171,59 @@
 ;; Views
 ;;
 (defn canvas-component [settings a b c]
- (let [state (r/atom {})] ;; you can include state
-   (r/create-class  {
-                     :component-did-mount (fn [this]
-                                           (do
-                                             (register-key-events)
-                                             (comment (draw-canvas-contents (get-canvas)))))
-                     :display-name "canvas-component"
+  (let [state (r/atom {})] ;; you can include state
+    (r/create-class  {
+                      :component-did-mount (fn [this]
+                                             (do
+                                               (register-key-events)
+                                               (comment (draw-canvas-contents (get-canvas)))))
+                      :display-name "canvas-component"
                       ;; note the keyword for this method
-                     :reagent-render  (fn [a b c]
-                                          [:div {:style {:margin-left "260px"}}
-                                            [:canvas {:id "canvas"
-                                                      :style {:width (str (*  (:tilesNr settings) (:tileSize settings)) "px")
-                                                              :height (str (*  (:tilesNr settings) (:tileSize settings)) "px")}}]])})))
+                      :reagent-render  (fn [a b c]
+                                         [:div {:style {:margin-left "260px"}}
+                                          [:canvas {:id "canvas"
+                                                    :style {:width (str (*  (:tilesNr settings) (:tileSize settings)) "px")
+                                                            :height (str (*  (:tilesNr settings) (:tileSize settings)) "px")}}]])})))
 
 
 
 
 (defn tick []
   (let [isRunning (:manualRunning @app-state)]
-   (if (and isRunning (not (:dead (:snake @app-state))))
-    (do
-     (swap! app-state assoc :snake (snake-move (:snake @app-state) settings))
-     (draw-snake (get-canvas) (:snake @app-state) settings)))))
+    (if (and isRunning (not (:dead (:snake @app-state))))
+      (do
+        (swap! app-state assoc :snake (snake-move (:snake @app-state) settings))
+        (draw-snake (get-canvas) (:snake @app-state) settings)))))
 
 
 (defn start-tick []
   (let [isRunning (:manualRunning @app-state)]
-     (if isRunning
-       (do
+    (if isRunning
+      (do
         (js/clearInterval (:tickFn @app-state))
         (swap! app-state assoc :manualRunning false))
-       (do
+      (do
         (draw-snake (get-canvas) (:snake @app-state) settings)
         (swap! app-state assoc
-          :manualRunning true
-          :tickFn (js/setInterval tick (:tickIntervalMs settings)))))))
+               :manualRunning true
+               :tickFn (js/setInterval tick (:tickIntervalMs settings)))))))
 
 
 
 (defn home-page []
- [:div
-    [:h2 "Snake in clojurescript"]
-    [:div
-       [:div {:style {:width "250px"
-                      :float "left"}}
-        [:input {:type "checkbox"}]
-        [:br]
-        [:input {:type "button"
-                 :value (if (:manualRunning @app-state) "stop" "start")
-                 :on-click start-tick}]
-        [:p (if (:dead (:snake @app-state)) "Sorry, you died :(" "")]]
-       [canvas-component settings "a" "b" "c"]]])
+  [:div
+   [:h2 "Snake in clojurescript"]
+   [:div
+    [:div {:style {:width "250px"
+                   :float "left"}}
+     [:input {:type "checkbox"}]
+     [:br]
+     [:input {:type "button"
+              :value (if (:manualRunning @app-state) "stop" "start")
+              :on-click start-tick}]
+     [:p (if (:dead (:snake @app-state)) "Sorry, you died :(" "")]
+     [:p (str "n. passi " (:lifeTime (:snake @app-state)) " / " (:snakeLifeMax settings))]]
+    [canvas-component settings "a" "b" "c"]]])
 
 
 
@@ -230,7 +232,7 @@
 ;; Initialize app
 
 (defn mount-root []
-   (rdom/render [home-page] (.getElementById js/document "app")))
+  (rdom/render [home-page] (.getElementById js/document "app")))
 
 (defn init! []
   (mount-root))
