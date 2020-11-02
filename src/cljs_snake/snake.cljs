@@ -53,7 +53,7 @@
 
 
 (defn find-first
-  "primo elemento di una collection che soffisfa condizione f"
+  "primo elemento di una collection che soddisfa condizione f"
   [f coll]
   (first (filter f coll)))
 
@@ -64,19 +64,13 @@
   ([max n] (lazy-seq (cons n (random-points-lazyseq max (get-random-point max))))))
 
 
-<<<<<<< HEAD
-(defn get-random-tile [snake settings]
-  "FIXME da verificare, perchè non deve tornare alcuno 0"
-  (let [n (:tilesNr settings)]
-    [(rand-int n) (rand-int n)]))
-=======
 (defn get-random-tile
   "torna una posizione casuale VALIDA sulla scacchiera (da 1 a nr mattonelle)"
   [snake settings]
   (find-first #(non-collide? snake %)
               (random-points-lazyseq (:tilesNr settings))))
 
->>>>>>> e64d73034691efa7ebe1641b0e610d4ac09d649a
+
 
 
 (defn new-food [snake settings]
