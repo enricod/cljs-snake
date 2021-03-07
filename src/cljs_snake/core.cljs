@@ -22,7 +22,7 @@
   (loop [x 10 result [] ] (if (= x 0)
                            result
                            (recur (dec x) (conj result x)))))
-;;
+
 
 
 ;; -------------------------
@@ -38,13 +38,13 @@
 
 
 
-(def app-state (r/atom { :manualMode true
-                         :manualRunning false
-                         :highScore 0
-                         :mutationRate 0.05
-                         :fps 100
-                         :snake s/snake1
-                         :population []}))  ;; elenco di snakes
+(def app-state (r/atom {:manualMode true
+                        :manualRunning false
+                        :highScore 0
+                        :mutationRate 0.05
+                        :fps 100
+                        :snake s/snake1
+                        :population []}))  ;; elenco di snakes
 
 
 
@@ -52,37 +52,40 @@
   s/snake1)
 
 
+
 (defn snake-update-post-move [snake settings]
   "controlla se snake è morto e imposta flag corrispondente se necessario"
+  
   (if (s/dead? snake settings)
-   (assoc snake :dead true :lifeTime (inc (:lifeTime snake)))
-   (assoc snake :lifeTime (inc (:lifeTime snake)))))
+    (assoc snake :dead true :lifeTime (inc (:lifeTime snake)))
+    (assoc snake :lifeTime (inc (:lifeTime snake)))))
 
 
 
 (defn snake-move [snake settings]
-  "muove il serpente e aggiorna, se necessario, flag di morte e aggiorna posizione cibo"
+  "muove il serpente e aggiorna, se necessario, flag di morte; inoltre aggiorna posizione cibo"
   (let [trails (:trails snake)
         dir (:dir snake)
         s2 (assoc snake :trails
-          ;; appendiamo nuova testa
-            (conj trails (vec (map + (first trails) dir))))]
-       (snake-update-post-move (if (s/has-eaten? s2)
-                                (s/new-food s2 settings)
-                                (s/drop-tail s2)) settings)))
+                  ;; appendiamo nuova testa
+                  (conj trails (vec (map + (first trails) dir))))]
+    (snake-update-post-move (if (s/has-eaten? s2)
+                              (s/new-food s2 settings)
+                              (s/drop-tail s2)) settings)))
+
 
 
 (defn simula []
   (loop [s (:snake @app-state) result []]
-   (if (s/dead? s settings)
-    (conj result s)
-    (recur (snake-move s settings) (conj result s)))))
+    (if (s/dead? s settings)
+      (conj result s)
+      (recur (snake-move s settings) (conj result s)))))
 
 ;; (repeatedly 10 #(snake-move (:snake @app-state) settings))
 
 
 (defn create-population [n]
- { :snakes (map #(create-snake settings) (range n))
+  { :snakes (map #(create-snake settings) (range n))
    :bestSnake 0
    :gen 0
    :bestSnakeScore 0
@@ -90,24 +93,29 @@
 
 
 
-
-(defn pos-on-canvas [tile]
-  (list (* (:tileSize settings) (dec (first tile))) (* (:tileSize settings) (dec (second tile)))))
+(defn pos-on-canvas
+  "data mattonella, calcola la posizione della stessa sul canvas"
+  [tile]
+  (list (* (:tileSize settings) (dec (first tile)))
+        (* (:tileSize settings) (dec (second tile)))))
 
 
 (defn get-canvas []
   (let [canvas (rdom/dom-node  (. js/document (getElementById "canvas")))]
+    canvas))
 
-   canvas))
 
-(defn- disegna-mattonella [ctx pos color wRatio hRatio]
+
+(defn- disegna-mattonella
+  "disegna sul canvas la mattonella"
+  [ctx pos color wRatio hRatio]
   (do
     (set! (.-fillStyle ctx) color)
     (.fillRect ctx
-     (* (first pos) wRatio)
-     (* (second pos) hRatio)
-     (* (:tileSize settings) wRatio)
-     (* (:tileSize settings) hRatio))))
+               (* (first pos) wRatio)
+               (* (second pos) hRatio)
+               (* (:tileSize settings) wRatio)
+               (* (:tileSize settings) hRatio))))
 
 
 
@@ -130,6 +138,7 @@
             (doall (map #(disegna-mattonella ctx (pos-on-canvas %) "#000000" wRatio hRatio) (:trails snake)))))))
 
 
+
 (defn posizione-valida?
   "true se valore non è nella lista"
   [lista valore]
@@ -146,7 +155,9 @@
 
 
 
-(defn do-change-snake-dir [snk d]
+(defn do-change-snake-dir
+  "aggiorna direzione di movimento del serpente"
+  [snk d]
   (swap! app-state assoc :snake (assoc snk :dir d)))
 
 
@@ -196,6 +207,7 @@
         (draw-snake (get-canvas) (:snake @app-state) settings)))))
 
 
+
 (defn start-tick []
   (let [isRunning (:manualRunning @app-state)]
     (if isRunning
@@ -234,5 +246,7 @@
 (defn mount-root []
   (rdom/render [home-page] (.getElementById js/document "app")))
 
+
 (defn init! []
   (mount-root))
+

@@ -7,6 +7,7 @@
 ;; serve qualcosa del tipo
 ;; - posizioni del cibo
 ;;
+
 (def snake1 {:trails (list [10 10] [9 10] [8 10])
              :dead false
              :lifeTime 0
@@ -50,7 +51,7 @@
 
 
 (defn find-first
-  "primo elemento di una collection che soffisfa condizione f"
+  "primo elemento di una collection che soddisfa condizione f"
   [f coll]
   (first (filter f coll)))
 
@@ -66,6 +67,7 @@
   [snake settings]
   (find-first #(non-collide? snake %)
               (random-points-lazyseq (:tilesNr settings))))
+
 
 
 
@@ -96,4 +98,6 @@
         (= h1y (inc tilesNr)))))
 
 
-(defn alive? [snake settings] (not (dead? snake settings)))
+(defn alive? [snake settings]
+  (not (dead? snake settings)))
+
