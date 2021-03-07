@@ -22,8 +22,8 @@
              :food [50 50]})
 
 
-(defn shead [snake]
-  "head of the snake"
+(defn shead  "head of the snake"
+  [snake]
   (first (:trails snake)))
 
 

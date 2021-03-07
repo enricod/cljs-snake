@@ -53,17 +53,18 @@
 
 
 
-(defn snake-update-post-move [snake settings]
+(defn snake-update-post-move 
   "controlla se snake è morto e imposta flag corrispondente se necessario"
-  
+  [snake settings]
   (if (s/dead? snake settings)
     (assoc snake :dead true :lifeTime (inc (:lifeTime snake)))
     (assoc snake :lifeTime (inc (:lifeTime snake)))))
 
 
 
-(defn snake-move [snake settings]
+(defn snake-move 
   "muove il serpente e aggiorna, se necessario, flag di morte; inoltre aggiorna posizione cibo"
+  [snake settings]
   (let [trails (:trails snake)
         dir (:dir snake)
         s2 (assoc snake :trails
