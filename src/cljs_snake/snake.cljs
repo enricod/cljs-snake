@@ -6,8 +6,6 @@
 ;;
 ;; serve qualcosa del tipo
 ;; - posizioni del cibo
-;; - numero di passi fatti
-;; - numero massimo di passi fattibili al massimo
 ;;
 (def snake1 {:trails (list [10 10] [9 10] [8 10])
              :dead false
@@ -71,18 +69,21 @@
 
 
 
-(defn new-food [snake settings]
+(defn new-food 
   "riposiziona il cibo FIXME controllare che posizione sia valida"
+  [snake settings]
   (assoc snake :food (get-random-tile snake settings)))
 
 
-(defn has-eaten? [snake]
+(defn has-eaten? 
   "torna true se ha mangiato il frutto"
+  [snake]
   (= (shead snake) (:food snake)))
 
 
-(defn dead? [snake settings]
+(defn dead? 
   "FIXME controllare che non vada contro se stesso"
+  [snake settings]
   (let [lifeTime (:lifeTime snake)
         h1 (shead snake)
         h1x (first h1)

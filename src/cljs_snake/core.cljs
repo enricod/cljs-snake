@@ -33,7 +33,7 @@
                :tileSize 20
                :hiddenLayers 3
                :hiddenNodes 2
-               :snakeLifeMax 200
+               :snakeLifeMax 300
                :intervalFn (fn [])})
 
 
